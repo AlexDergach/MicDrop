@@ -5,9 +5,19 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import LoginScreen from "./LoginScreen";
+import AccountTypeSelectionScreen from "./AccountTypeSelectionScreen";
+import BuskarRegistrationScreen from "./BuskarRegistrationScreen";
+import VenueRegistrationScreen from "./VenueRegistrationScreen";
+import BuskarHomeScreen from "./BuskarHomeScreen";
+import VenueHomeScreen from "./VenueHomeScreen";
 import Pin from './pin';
 import PopupForm from './pop';
 import { profile as userProfile } from './profiledata';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   const [pins, setPins] = useState([]);
@@ -20,31 +30,45 @@ export default function App() {
   const closePopups = () => setActivePopupIndex(null);
 
   return (
-    <TouchableWithoutFeedback onPress={closePopups}>
-      <View style={{ flex: 1 }}>
-        <View style={styles.container}>
-          {pins.map((pin, index) => (
-            <Pin
-              key={index}
-              profile={pin}
-              isActive={activePopupIndex === index}
-              onPress={() =>
-                setActivePopupIndex(activePopupIndex === index ? null : index)
-              }
+    <>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="AccountTypeSelection" component={AccountTypeSelectionScreen} />
+          <Stack.Screen name="BuskarRegistration" component={BuskarRegistrationScreen} />
+          <Stack.Screen name="VenueRegistration" component={VenueRegistrationScreen} />
+          <Stack.Screen name="BuskarHome" component={BuskarHomeScreen} />
+          <Stack.Screen name="VenueHome" component={VenueHomeScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+  
+      <TouchableWithoutFeedback onPress={closePopups}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.container}>
+            {pins.map((pin, index) => (
+              <Pin
+                key={index}
+                profile={pin}
+                isActive={activePopupIndex === index}
+                onPress={() =>
+                  setActivePopupIndex(activePopupIndex === index ? null : index)
+                }
+              />
+            ))}
+            <PopupForm onSubmit={handleNewPin} />
+          </View>
+  
+          <View style={styles.profilePicWrapper}>
+            <Image
+              source={{ uri: userProfile.profileIcon }}
+              style={styles.profilePic}
             />
-          ))}
-          <PopupForm onSubmit={handleNewPin} />
+          </View>
         </View>
-
-        <View style={styles.profilePicWrapper}>
-          <Image
-            source={{ uri: userProfile.profileIcon }}
-            style={styles.profilePic}
-          />
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </>
   );
+  
 }
 
 const styles = StyleSheet.create({
