@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { profile as userProfile } from './profiledata';
+import { getActiveProfile } from './profiledata';
 
 export default function PopupForm({ onSubmit }) {
   const [visible, setVisible] = useState(false);
@@ -22,8 +22,9 @@ export default function PopupForm({ onSubmit }) {
   const [address, setAddress] = useState('');
   const [ticketLink, setTicketLink] = useState('');
 
-  const isBusker = userProfile.profileType === 'busker';
-  const isBar = userProfile.profileType === 'bar';
+  const userProfile = getActiveProfile();
+  const isBusker = userProfile?.profileType === 'busker';
+  const isBar = userProfile?.profileType === 'bar' || userProfile?.profileType === 'venue';
 
   const resetForm = () => {
     setName('');
@@ -36,6 +37,11 @@ export default function PopupForm({ onSubmit }) {
   };
 
   const handleSend = () => {
+    if (!name.trim()) {
+      alert('Name is required.');
+      return;
+    }
+
     const newProfile = {
       profileType: userProfile.profileType,
       profileName: name,
@@ -62,35 +68,69 @@ export default function PopupForm({ onSubmit }) {
   return (
     <>
       <TouchableOpacity style={styles.fab} onPress={() => setVisible(true)}>
-        <Text style={styles.fabText}>+</Text>
+        <Text style={styles.fabText}>＋</Text>
       </TouchableOpacity>
 
-      <Modal visible={visible} transparent animationType="slide">
-        <TouchableWithoutFeedback onPress={() => { setVisible(false); Keyboard.dismiss(); }}>
-          <View style={styles.overlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.popup}>
-                <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input} />
+      <Modal transparent visible={visible} animationType="slide">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <TextInput
+                style={styles.input}
+                placeholder="Name"
+                value={name}
+                onChangeText={setName}
+              />
 
-                {isBusker && (
-                  <>
-                    <TextInput placeholder="About" value={about} onChangeText={setAbout} style={styles.input} />
-                    <TextInput placeholder="Donate URL" value={donateUrl} onChangeText={setDonateUrl} style={styles.input} />
-                  </>
-                )}
+              {isBusker && (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="About Me"
+                    value={about}
+                    onChangeText={setAbout}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Donate URL"
+                    value={donateUrl}
+                    onChangeText={setDonateUrl}
+                  />
+                </>
+              )}
 
-                {isBar && (
-                  <>
-                    <TextInput placeholder="Artist Playing" value={artistPlaying} onChangeText={setArtistPlaying} style={styles.input} />
-                    <TextInput placeholder="Doors Open" value={doors} onChangeText={setDoors} style={styles.input} />
-                    <TextInput placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
-                    <TextInput placeholder="Ticket Link" value={ticketLink} onChangeText={setTicketLink} style={styles.input} />
-                  </>
-                )}
+              {isBar && (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Artist Playing"
+                    value={artistPlaying}
+                    onChangeText={setArtistPlaying}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Doors Open Time"
+                    value={doors}
+                    onChangeText={setDoors}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Address"
+                    value={address}
+                    onChangeText={setAddress}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ticketmaster Link"
+                    value={ticketLink}
+                    onChangeText={setTicketLink}
+                  />
+                </>
+              )}
 
-                <Button title="Send" onPress={handleSend} />
-              </View>
-            </TouchableWithoutFeedback>
+              <Button title="Submit" onPress={handleSend} />
+              <Button title="Cancel" onPress={() => setVisible(false)} color="grey" />
+            </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
@@ -100,40 +140,35 @@ export default function PopupForm({ onSubmit }) {
 
 const styles = StyleSheet.create({
   fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 30,
     backgroundColor: 'green',
     width: 60,
     height: 60,
     borderRadius: 30,
-    justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
-    zIndex: 10,
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 50,
   },
   fabText: {
     color: 'white',
-    fontSize: 32,
-    lineHeight: 32,
+    fontSize: 30,
   },
-  overlay: {
+  modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  popup: {
-    width: 300,
+    justifyContent: 'center',
     padding: 20,
+  },
+  modalContent: {
     backgroundColor: 'white',
     borderRadius: 10,
+    padding: 20,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
     borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
     marginBottom: 10,
-    paddingHorizontal: 10,
+    borderRadius: 5,
   },
 });

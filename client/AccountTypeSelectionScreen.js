@@ -6,7 +6,7 @@ export default function AccountTypeSelectionScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Which account would you like to create?</Text>
       <View style={styles.buttonContainer}>
-        <Button title="Buskar" onPress={() => navigation.navigate("BuskarRegistration")} />
+        <Button title="Busker" onPress={() => navigation.navigate("BuskarRegistration")} />
         <Button title="Venue/Bar" onPress={() => navigation.navigate("VenueRegistration")} />
       </View>
     </View>

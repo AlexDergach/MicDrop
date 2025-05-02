@@ -27,7 +27,7 @@ export default function BuskarRegistrationScreen({ navigation }) {
     }
 
     const userData = {
-      userType: "buskar",
+      userType: "busker",
       username,
       password,
       firstName,

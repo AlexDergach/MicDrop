@@ -29,7 +29,7 @@ export default function VenueRegistrationScreen({ navigation }) {
     }
 
     const venueData = {
-      userType: "venue",
+      userType: "bar",
       username,
       password,
       venueName,

@@ -1,26 +1,35 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet, Alert, Image } from "react-native";
-import { findUserByUsernameAndPassword } from "./profiledata"; // Import profile data
+import {
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  Image,
+} from "react-native";
+import {
+  findUserByUsernameAndPassword,
+  loginMockProfile,
+} from "./profiledata";
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, setIsLoggedIn }) {
+// export default function LoginScreen({ navigation, route }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
     const user = findUserByUsernameAndPassword(username, password);
-    if (user) {
-      const token = {
-        id: user.id,
-        username: user.username,
-        userType: user.userType,
-      };
 
-      // Navigate to respective page
-      if (user.userType === "buskar") {
-        navigation.navigate("BuskarHome", { token });
-      } else if (user.userType === "venue") {
-        navigation.navigate("VenueHome", { token });
-      }
+    if (user) {
+      // 1. Set the global profile
+      loginMockProfile(user);
+
+      // 2. Mark user as logged in (update App.js state)
+      setIsLoggedIn(true);
+      // route.params?.setIsLoggedIn(true);
+
+      // 3. Return to MainMap screen
+      navigation.navigate("MainMap");
     } else {
       Alert.alert("Invalid login", "Incorrect username or password.");
     }
@@ -29,7 +38,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Image
-        source={require("./assets/micdrop.png")}
+        source={{ uri: "https://cdn-icons-png.flaticon.com/512/847/847969.png" }}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -47,13 +56,32 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
       />
       <Button title="Login" onPress={handleLogin} />
-      <Button title="Create Account" onPress={() => navigation.navigate("AccountTypeSelection")} />
+      <Button
+        title="Create Account"
+        onPress={() => navigation.navigate("AccountTypeSelection")}
+      />
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  input: { borderWidth: 1, width: "100%", marginBottom: 10, padding: 8, borderRadius: 5 },
-  logo: { width: 200, height: 100, marginBottom: 20 }, 
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  input: {
+    borderWidth: 1,
+    width: "100%",
+    marginBottom: 10,
+    padding: 8,
+    borderRadius: 5,
+  },
+  logo: {
+    width: 200,
+    height: 100,
+    marginBottom: 20,
+  },
 });
